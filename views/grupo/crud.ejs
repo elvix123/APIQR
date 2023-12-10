@@ -1,0 +1,96 @@
+<%- include('../layouts/head.ejs') %>
+
+<body>
+    
+    <div class="wrapped">
+        
+        <div class="sidebar">
+            <%- include('../layouts/sideBar.ejs') %>
+        </div>
+        <div class="main-panel ps ps--active-y">
+            <div class="navbar navbar-expand-lg navbar-absolute navbar-transparent">
+                <%- include('../layouts/navBar.ejs') %>
+            </div>
+            
+        <div class="content">
+            <div class="main-panel">
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="card card-chart">
+                                <h1>CRUD de Grupos</h1>
+
+                                <!-- Formulario para Crear Grupo -->
+                                <form id="createForm" action="/api/web/grupo" method="POST" onsubmit="return createGrupo()">
+                                    <label for="name">Nombre:</label>
+                                    <input type="text" name="name" id="grupoName" required>
+                                    <label for="nro_inscritos">Número de Inscritos:</label>
+                                    <input type="number" name="nro_inscritos" id="grupoInscritos" required>
+                                    <!-- Agregar un campo para seleccionar la carrera -->
+                                    <label for="id_carrera">Carrera:</label>
+                                    <select name="id_carrera" id="grupoCarrera" required>
+                                        <% carreras.forEach(carrera => { %>
+                                            <option value="<%= carrera._id %>"><%= carrera.name %></option>
+                                        <% }); %>
+                                    </select>
+                                    <button type="submit">Crear Grupo</button>
+                                </form>
+                            
+                                <!-- Detalles de grupo -->
+                                <div id="grupoDetails"></div>
+                            
+                            
+                                <!-- Tabla de Grupos -->
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>Nombre</th>
+                                            <th>Número de Inscritos</th>
+                                            <th>Carrera</th>
+                                            <th>Acciones</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <% grupos.forEach(grupo => { %>
+                                            <tr>
+                                                <!-- Detalles de Grupo -->
+                                                <td><a href="#" onclick="showGrupoDetails('<%= grupo._id %>')"><%= grupo.name %></a></td>
+                                                <td><%= grupo.nro_inscritos %></td>
+                                                <td><%= grupo.id_carrera.name %></td>
+                                                <!-- Enlace para Editar Grupo -->
+                                                <td><a href="#" onclick="showEditForm('<%= grupo._id %>', '<%= grupo.name %>', '<%= grupo.nro_inscritos %>', '<%= grupo.id_carrera._id %>'); event.preventDefault();">Editar</a></td>
+                                                <!-- Botón para Eliminar Grupo -->
+                                                <td>
+                                                    <button type="button" onclick="confirmDelete('<%= grupo._id %>')">Eliminar</button>
+                                                </td>
+                                            </tr>
+                                        <% }); %>
+                                    </tbody>
+                                </table>
+                            
+                                <!-- Formulario para Editar Grupo -->
+                                <form id="editForm" style="display: none;" onsubmit="return editGrupo()">
+                                    <input type="hidden" id="editId" name="_id">
+                                    <label for="editName">Nuevo Nombre:</label>
+                                    <input type="text" id="editName" name="name" required>
+                                    <label for="editInscritos">Nuevo Número de Inscritos:</label>
+                                    <input type="number" id="editInscritos" name="nro_inscritos" required>
+                                    <!-- Agregar un campo para seleccionar la carrera -->
+                                    <label for="editCarrera">Nueva Carrera:</label>
+                                    <select id="editCarrera" name="id_carrera" required>
+                                        <% carreras.forEach(carrera => { %>
+                                            <option value="<%= carrera._id %>"><%= carrera.name %></option>
+                                        <% }); %>
+                                    </select>
+                                    <button type="submit">Guardar Cambios</button>
+                                </form>                            
+                            </div>
+                        </div>
+                    </div>
+            </div>
+        </div>
+    </div>  
+    <script src="/js/web/grupos.js"></script>
+    <%- include('../layouts/footer.ejs') %>
+</body>
+
+</html>

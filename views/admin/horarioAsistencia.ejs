@@ -1,0 +1,113 @@
+<!-- Este es tu archivo CRUD para Aulas -->
+
+<!DOCTYPE html>
+<html lang="en">
+  <body>
+    <% if (horariosPersonas.length > 0) { %>
+    <table id="miTabla" >
+      <thead>
+        <tr>
+          <th>Aula</th>
+          <th>Profesor</th>
+          <th>Grupo</th>
+          <th colspan="2">Horario</th>
+          <th>Estado-Asistencia</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% horariosPersonas.forEach(horarioPersona => { %>
+        <tr>
+          <!-- Detalles de Horario Persona -->
+          <td><%= horarioPersona.id_horario.aula._id %></td>
+          <td>| - |<%= horarioPersona.id_persona._id %></td>
+          <td><%= horarioPersona.id_grupo.name %></td>
+          <td>
+            <%=
+            horarioPersona.id_horario.hora_inicio.toLocaleTimeString('es-PE', {
+            hour: '2-digit', minute: '2-digit' }) %>
+          </td>
+          <!-- cols -->
+          <td>
+            <%= horarioPersona.id_horario.hora_fin.toLocaleTimeString('es-PE', {
+            hour: '2-digit', minute: '2-digit' }) %>
+          </td>
+          <!-- cols -->
+
+          <td data-id="<%= horarioPersona._id %>"><%= horarioPersona.asistencia %></td>
+
+          <!-- Enlace para Editar Horario Persona -->
+        </tr>
+        <% }); %>
+      </tbody>
+    </table>
+
+    <% } else { %>
+    <p>No hay horarios de personas disponibles.</p>
+    <% } %>
+
+    <script src="/socket.io/socket.io.js"></script><!--  -->
+    <script>
+      const socket = io.connect();
+      socket.on("asistenciaCambiada", (data) => {
+        console.log("Asistencia cambiada:", data);
+
+        // Actualiza el campo de asistencia en la tabla sin recargar
+        actualizarCampoDeAsistencia(
+          data.idHorarioPersona,
+          data.nuevaAsistencia
+        );
+        // Realizar acciones adicionales según sea necesario
+        // Por ejemplo, puedes actualizar la interfaz de usuario, mostrar una notificación, etc.
+      });
+      let tiempoRestante = 60;
+      function actualizarTabla() {
+        console.log("w");
+        // Simula la actualización de la tabla (reemplaza con tu lógica real)
+
+        fetch(`/api/web/horarioAsistencia`)
+          .then((response) => response.json())
+          .then((data) => {
+            console.log(data);
+            const tabla = document.getElementById("miTabla");
+            const tbody = tabla.querySelector("tbody");
+            tbody.innerHTML = "";
+            data.forEach((horarioPersona) => {
+              const row = document.createElement("tr");
+              row.innerHTML = `
+                <td>${horarioPersona.id_horario.dia.toLocaleString()}</td>
+                <td>${horarioPersona.id_grupo.name}</td>
+                <td>${horarioPersona.id_curso.name}</td>
+                <td>${horarioPersona.id_persona.name}</td>
+                <td data-id="${horarioPersona._id}">${
+                horarioPersona.asistencia ? "Sí" : "No"
+              }</td>
+                <td>${horarioPersona.estado}</td>
+                <td>${horarioPersona.contrasena}</td>
+            `;
+              tbody.appendChild(row);
+            });
+          })
+          .catch((error) =>
+            console.error("Error al cargar detalles de aula:", error)
+          );
+      }
+      function actualizarCampoDeAsistencia(idHorarioPersona, nuevaAsistencia) {
+        // Encuentra la celda en la tabla con el data-id correspondiente
+        const celdaAsistencia = document.querySelector(
+          `td[data-id="${idHorarioPersona}"]`
+        );
+
+        if (celdaAsistencia) {
+          // Actualiza el contenido de la celda de asistencia
+          celdaAsistencia.textContent = nuevaAsistencia ? "Sí" : "No";
+        }
+      }
+      function actualizarCampoAsistencia() {
+        console.log("Campo de asistencia actualizado");
+        socket.emit("campoAsistenciaActualizado", "asf");
+      }
+      // Configura un intervalo para actualizar la tabla cada 50 minutos (50 * 60 * 1000 milisegundos)
+      setInterval(actualizarTabla, 1000 * 60 * 5);
+    </script>
+  </body>
+</html>

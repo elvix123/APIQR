@@ -1,0 +1,99 @@
+<%- include('../layouts/head.ejs') %>
+
+<body>
+    
+    <div class="wrapped">
+        
+        <div class="sidebar">
+            <%- include('../layouts/sideBar.ejs') %>
+        </div>
+        <div class="main-panel ps ps--active-y">
+            <div class="navbar navbar-expand-lg navbar-absolute navbar-transparent">
+                <%- include('../layouts/navBar.ejs') %>
+            </div>
+            
+        <div class="content">
+            <div class="main-panel">
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="card card-chart">
+                                <h1>CRUD de Cursos</h1>
+    
+                                <!-- Formulario para Crear Curso -->
+                                <form id="createForm" action="/api/web/curso" method="POST" onsubmit="return createCurso()">
+                                    <label for="name">Nombre:</label>
+                                    <input type="text" name="name" id="cursoName" required>
+                                    <label for="horas_lab">Horas de Laboratorio:</label>
+                                    <input type="number" name="horas_lab" id="cursoHorasLab" required>
+                                    <label for="horas_teo">Horas Teóricas:</label>
+                                    <input type="number" name="horas_teo" id="cursoHorasTeo" required>
+                                    <!-- Agregar un campo para seleccionar la carrera -->
+                                    <label for="id_carrera">Carrera:</label>
+                                    <select name="id_carrera" id="cursoCarrera" required>
+                                        <% carreras.forEach(carrera => { %>
+                                            <option value="<%= carrera._id %>"><%= carrera.name %></option>
+                                        <% }); %>
+                                    </select>
+                                    <button type="submit">Crear Curso</button>
+                                </form>
+                            
+                                <!-- Tabla de Cursos -->
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>Nombre</th>
+                                            <th>Horas de Laboratorio</th>
+                                            <th>Horas Teóricas</th>
+                                            <th>Horas Totales</th>
+                                            <th>Carrera</th>
+                                            <th>Acciones</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <% cursos.forEach(curso => { %>
+                                            <tr>
+                                                <!-- Detalles de Curso -->
+                                                <td><a href="/api/web/curso/<%= curso._id %>"><%= curso.name %></a></td>
+                                                <td><%= curso.horas_lab %></td>
+                                                <td><%= curso.horas_teo %></td>
+                                                <td><%= curso.horas_total %></td>
+                                                <td><%= curso.id_carrera.name %></td>
+                                                <!-- Enlace para Editar Curso -->
+                                                <td><a href="#" onclick="showEditForm('<%= curso._id %>', '<%= curso.name %>', '<%= curso.horas_lab %>', '<%= curso.horas_teo %>','<%= curso.id_carrera._id %>'); event.preventDefault();">Editar</a></td>
+                                                <!-- Botón para Eliminar Curso -->
+                                                <td>
+                                                    <button type="button" onclick="confirmDelete('<%= curso._id %>')">Eliminar</button>
+                                                </td>
+                                            </tr>
+                                        <% }); %>
+                                    </tbody>
+                                </table>
+                            
+                                <!-- Formulario para Editar Curso -->
+                                <form id="editForm" style="display: none;" onsubmit="return editCurso()">
+                                    <input type="hidden" id="editId" name="_id">
+                                    <label for="editName">Nuevo Nombre:</label>
+                                    <input type="text" id="editName" name="name" required>
+                                    <label for="editHorasLab">Nuevas Horas de Laboratorio:</label>
+                                    <input type="number" id="editHorasLab" name="horas_lab" required>
+                                    <label for="editHorasTeo">Nuevas Horas Teóricas:</label>
+                                    <input type="number" id="editHorasTeo" name="horas_teo" required>
+                                    <!-- Agregar un campo para seleccionar la carrera -->
+                                    <label for="editCarrera">Nueva Carrera:</label>
+                                    <select id="editCarrera" name="id_carrera" required>
+                                        <% carreras.forEach(carrera => { %>
+                                            <option value="<%= carrera._id %>"><%= carrera.name %></option>
+                                        <% }); %>
+                                    </select>
+                                    <button type="submit">Guardar Cambios</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+            </div>
+        </div>    
+        </div>
+    </div>
+    <script src="/js/web/cursos.js"></script>
+    <%- include('../layouts/footer.ejs') %>
+</body>

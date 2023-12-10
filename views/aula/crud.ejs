@@ -1,0 +1,79 @@
+<%- include('../layouts/head.ejs') %>
+
+<body>
+    <div class="wrapped">
+        <div class="sidebar">
+            <%- include('../layouts/sideBar.ejs') %>
+        </div>
+        <div class="main-panel ps ps--active-y">
+            <div class="navbar navbar-expand-lg navbar-absolute navbar-transparent">
+                <%- include('../layouts/navBar.ejs') %>
+            </div>
+
+            <div class="content">
+                <div class="main-panel">
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="card card-chart">
+                                <h1>CRUD de Aulas</h1>
+
+                                <!-- Formulario para Crear Aula -->
+                                <form id="createForm" action="/api/web/aula" method="POST"
+                                    onsubmit="return createAula()">
+                                    <label for="name">Nombre:</label>
+                                    <input type="text" name="name" id="aulaName" required>
+                                    <button type="submit">Crear Aula</button>
+                                </form>
+
+                                <!-- Tabla de Aulas -->
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>Nombre</th>
+                                            <th>Acciones</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <% aulas.forEach(aula=> { %>
+                                            <tr>
+                                                <!-- Detalles de Aula -->
+                                                <td>
+                                                    <a href="#" onclick="loadAulaDetails('<%= aula._id %>')">
+                                                        <%= aula.name %>
+                                                    </a>
+                                                </td>
+                                                <!-- Enlace para Editar Aula -->
+                                                <td><a href="#"
+                                                        onclick="showEditForm('<%= aula._id %>', '<%= aula.name %>'); event.preventDefault();">Editar</a>
+                                                </td>
+                                                <!-- Botón para Eliminar Aula -->
+                                                <td>
+                                                    <button type="button"
+                                                        onclick="confirmDelete('<%= aula._id %>')">Eliminar</button>
+                                                </td>
+                                            </tr>
+                                            <% }); %>
+                                    </tbody>
+                                </table>
+
+                                <!-- Formulario para Editar Aula -->
+                                <form id="editForm" style="display: none;" onsubmit="return editAula()">
+                                    <input type="hidden" id="editId" name="_id">
+                                    <label for="editName">Nuevo Nombre:</label>
+                                    <input type="text" id="editName" name="name" required>
+                                    <button type="submit">Guardar Cambios</button>
+                                </form>
+
+                                <div id="aulaDetails">
+                                    <!-- Aquí se cargarán dinámicamente los detalles del aula -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script src="/js/web/aulas.js"></script>
+        <%- include('../layouts/footer.ejs') %>
+    </div>
+</body>
